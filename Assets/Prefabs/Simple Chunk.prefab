@@ -12,11 +12,10 @@ GameObject:
   - component: {fileID: 1202625379106253004}
   - component: {fileID: 7326106953279028774}
   - component: {fileID: 8951174206967372743}
-  - component: {fileID: 5290429220776162892}
-  - component: {fileID: 646369936840132011}
+  - component: {fileID: 2955538421282726784}
   m_Layer: 0
-  m_Name: Chunk
-  m_TagString: Terrain
+  m_Name: Simple Chunk
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -64,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dfd5a303d4edefc43a0a784aa1d4534e, type: 2}
+  - {fileID: 2100000, guid: d8eccd73a6902a04eae9084d964dd9b8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,7 +107,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!114 &5290429220776162892
+--- !u!114 &2955538421282726784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,18 +116,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 576289961308665369}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dfad6ad3cc1b76479d832660a3ec538, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &646369936840132011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 576289961308665369}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4259919bfd99ad4fa13ad63b1bd61ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 662707f3678e97243896bf52a13e810c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
