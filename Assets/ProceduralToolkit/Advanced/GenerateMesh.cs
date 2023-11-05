@@ -1,13 +1,13 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProceduralToolkit;
 
 [RequireComponent(typeof(MeshFilter))]
-public class GenerateMesh : MonoBehaviour {
+public class GenerateMesh : MonoBehaviour
+{
 
     private MeshFilter meshFilter;
-
     public Vector3 TerrainSize { get; set; }
     public float CellSize { get; set; }
     public float NoiseScale { get; set; }
@@ -19,7 +19,8 @@ public class GenerateMesh : MonoBehaviour {
     private static bool usePerlinNoise = true;
     public static bool UsePerlinNoise { get { return usePerlinNoise; } set { usePerlinNoise = value; } }
 
-    public void Generate() {
+    public void Generate()
+    {
         meshFilter = GetComponent<MeshFilter>();
 
         MeshDraft draft = TerrainDraft(TerrainSize, CellSize, NoiseOffset, NoiseScale, Gradient);
@@ -31,14 +32,16 @@ public class GenerateMesh : MonoBehaviour {
             meshCollider.sharedMesh = meshFilter.mesh;
     }
 
-    private static MeshDraft TerrainDraft(Vector3 terrainSize, float cellSize, Vector2 noiseOffset, float noiseScale, Gradient gradient) {
+    private static MeshDraft TerrainDraft(Vector3 terrainSize, float cellSize, Vector2 noiseOffset, float noiseScale, Gradient gradient)
+    {
         int xSegments = Mathf.FloorToInt(terrainSize.x / cellSize);
         int zSegments = Mathf.FloorToInt(terrainSize.z / cellSize);
 
         float xStep = terrainSize.x / xSegments;
         float zStep = terrainSize.z / zSegments;
         int vertexCount = 6 * xSegments * zSegments;
-        MeshDraft draft = new MeshDraft {
+        MeshDraft draft = new()
+        {
             name = "Terrain",
             vertices = new List<Vector3>(vertexCount),
             triangles = new List<int>(vertexCount),
@@ -46,15 +49,18 @@ public class GenerateMesh : MonoBehaviour {
             colors = new List<Color>(vertexCount)
         };
 
-        for (int i = 0; i < vertexCount; i++) {
+        for (int i = 0; i < vertexCount; i++)
+        {
             draft.vertices.Add(Vector3.zero);
             draft.triangles.Add(0);
             draft.normals.Add(Vector3.zero);
             draft.colors.Add(Color.black);
         }
 
-        for (int x = 0; x < xSegments; x++) {
-            for (int z = 0; z < zSegments; z++) {
+        for (int x = 0; x < xSegments; x++)
+        {
+            for (int z = 0; z < zSegments; z++)
+            {
                 int index0 = 6 * (x + z * xSegments);
                 int index1 = index0 + 1;
                 int index2 = index0 + 2;
@@ -67,10 +73,10 @@ public class GenerateMesh : MonoBehaviour {
                 float height10 = GetHeight(x + 1, z + 0, xSegments, zSegments, noiseOffset, noiseScale);
                 float height11 = GetHeight(x + 1, z + 1, xSegments, zSegments, noiseOffset, noiseScale);
 
-                Vector3 vertex00 = new Vector3((x + 0) * xStep, height00 * terrainSize.y, (z + 0) * zStep);
-                Vector3 vertex01 = new Vector3((x + 0) * xStep, height01 * terrainSize.y, (z + 1) * zStep);
-                Vector3 vertex10 = new Vector3((x + 1) * xStep, height10 * terrainSize.y, (z + 0) * zStep);
-                Vector3 vertex11 = new Vector3((x + 1) * xStep, height11 * terrainSize.y, (z + 1) * zStep);
+                Vector3 vertex00 = new((x + 0) * xStep, height00 * terrainSize.y, (z + 0) * zStep);
+                Vector3 vertex01 = new((x + 0) * xStep, height01 * terrainSize.y, (z + 1) * zStep);
+                Vector3 vertex10 = new((x + 1) * xStep, height10 * terrainSize.y, (z + 0) * zStep);
+                Vector3 vertex11 = new((x + 1) * xStep, height11 * terrainSize.y, (z + 1) * zStep);
 
                 draft.vertices[index0] = vertex00;
                 draft.vertices[index1] = vertex01;
@@ -108,7 +114,8 @@ public class GenerateMesh : MonoBehaviour {
         return draft;
     }
 
-    private static float GetHeight(int x, int z, int xSegments, int zSegments, Vector2 noiseOffset, float noiseScale) {
+    private static float GetHeight(int x, int z, int xSegments, int zSegments, Vector2 noiseOffset, float noiseScale)
+    {
         float noiseX = noiseScale * x / xSegments + noiseOffset.x;
         float noiseZ = noiseScale * z / zSegments + noiseOffset.y;
         if (usePerlinNoise)

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8951174206967372743}
   - component: {fileID: 5290429220776162892}
   - component: {fileID: 646369936840132011}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chunk
   m_TagString: Terrain
   m_Icon: {fileID: 0}
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dfd5a303d4edefc43a0a784aa1d4534e, type: 2}
+  - {fileID: 2100000, guid: d8eccd73a6902a04eae9084d964dd9b8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

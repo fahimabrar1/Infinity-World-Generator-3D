@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TerrainController : MonoBehaviour {
-
+public class TerrainController : MonoBehaviour
+{
+    public LevelManager LevelManager;
     [SerializeField]
     private GameObject terrainTilePrefab = null;
     [SerializeField]
@@ -52,18 +53,22 @@ public class TerrainController : MonoBehaviour {
     public Transform Level { get; set; }
     private Vector2 noiseRange;
 
-    private void Awake() {
+    private void Awake()
+    {
+        LevelManager = FindAnyObjectByType<LevelManager>();
         if (noise)
             noisePixels = GetGrayScalePixels(noise);
         GenerateMesh.UsePerlinNoise = usePerlinNoise;
         noiseRange = usePerlinNoise ? Vector2.one * 256 : new Vector2(noisePixels.Length, noisePixels[0].Length);
     }
 
-    private void Start() {
+    private void Start()
+    {
         InitialLoad();
     }
 
-    public void InitialLoad() {
+    public void InitialLoad()
+    {
         DestroyTerrain();
 
         Level = new GameObject("Level").transform;
@@ -81,7 +86,8 @@ public class TerrainController : MonoBehaviour {
         RandomizeInitState();
     }
 
-    private void Update() {
+    private void Update()
+    {
         //save the tile the player is on
         Vector2 playerTile = TileFromPosition(playerTransform.localPosition);
         //save the tiles of all tracked objects in gameTransforms (including the player)
@@ -91,10 +97,12 @@ public class TerrainController : MonoBehaviour {
             centerTiles.Add(TileFromPosition(t.localPosition));
 
         //if no tiles exist yet or tiles should change
-        if (previousCenterTiles == null || HaveTilesChanged(centerTiles)) {
-            List<GameObject> tileObjects = new List<GameObject>();
+        if (previousCenterTiles == null || HaveTilesChanged(centerTiles))
+        {
+            List<GameObject> tileObjects = new();
             //activate new tiles
-            foreach (Vector2 tile in centerTiles) {
+            foreach (Vector2 tile in centerTiles)
+            {
                 bool isPlayerTile = tile == playerTile;
                 int radius = isPlayerTile ? radiusToRender : 1;
                 for (int i = -radius; i <= radius; i++)
@@ -110,10 +118,12 @@ public class TerrainController : MonoBehaviour {
 
             //destroy inactive tiles if they're too far away
             List<Vector2> keysToRemove = new List<Vector2>();//can't remove item when inside a foreach loop
-            foreach (KeyValuePair<Vector2, GameObject> kv in terrainTiles) {
-                if (Vector3.Distance(playerTransform.position, kv.Value.transform.position) > destroyDistance && !kv.Value.activeSelf) {
+            foreach (KeyValuePair<Vector2, GameObject> kv in terrainTiles)
+            {
+                if (Vector3.Distance(playerTransform.position, kv.Value.transform.position) > destroyDistance && !kv.Value.activeSelf)
+                {
                     keysToRemove.Add(kv.Key);
-                    Destroy(kv.Value);
+                    LevelManager.EnqueueChunk(kv.Value);
                 }
             }
             foreach (Vector2 key in keysToRemove)
@@ -127,10 +137,14 @@ public class TerrainController : MonoBehaviour {
 
     //Helper methods below
 
-    private void ActivateOrCreateTile(int xIndex, int yIndex, List<GameObject> tileObjects) {
-        if (!terrainTiles.ContainsKey(new Vector2(xIndex, yIndex))) {
+    private void ActivateOrCreateTile(int xIndex, int yIndex, List<GameObject> tileObjects)
+    {
+        if (!terrainTiles.ContainsKey(new Vector2(xIndex, yIndex)))
+        {
             tileObjects.Add(CreateTile(xIndex, yIndex));
-        } else {
+        }
+        else
+        {
             GameObject t = terrainTiles[new Vector2(xIndex, yIndex)];
             tileObjects.Add(t);
             if (!t.activeSelf)
@@ -138,13 +152,11 @@ public class TerrainController : MonoBehaviour {
         }
     }
 
-    private GameObject CreateTile(int xIndex, int yIndex) {
-        GameObject terrain = Instantiate(
-            terrainTilePrefab,
-            Vector3.zero,
-            Quaternion.identity,
-            Level
-        );
+    private GameObject CreateTile(int xIndex, int yIndex)
+    {
+        GameObject terrain = LevelManager.DequeueChunk();
+        terrain.transform.parent = Level;
+
         //had to move outside of instantiate because it's a local position
         terrain.transform.localPosition = new Vector3(terrainSize.x * xIndex, terrainSize.y, terrainSize.z * yIndex);
         terrain.name = TrimEnd(terrain.name, "(Clone)") + " [" + xIndex + " , " + yIndex + "]";
@@ -168,7 +180,8 @@ public class TerrainController : MonoBehaviour {
         return terrain;
     }
 
-    private Vector2 NoiseOffset(int xIndex, int yIndex) {
+    private Vector2 NoiseOffset(int xIndex, int yIndex)
+    {
         Vector2 noiseOffset = new Vector2(
             (xIndex * noiseScale + startOffset.x) % noiseRange.x,
             (yIndex * noiseScale + startOffset.y) % noiseRange.y
@@ -181,15 +194,18 @@ public class TerrainController : MonoBehaviour {
         return noiseOffset;
     }
 
-    private Vector2 TileFromPosition(Vector3 position) {
+    private Vector2 TileFromPosition(Vector3 position)
+    {
         return new Vector2(Mathf.FloorToInt(position.x / terrainSize.x + .5f), Mathf.FloorToInt(position.z / terrainSize.z + .5f));
     }
 
-    private void RandomizeInitState() {
+    private void RandomizeInitState()
+    {
         Random.InitState((int)System.DateTime.UtcNow.Ticks);//casting a long to an int "loops" it (like modulo)
     }
 
-    private bool HaveTilesChanged(List<Vector2> centerTiles) {
+    private bool HaveTilesChanged(List<Vector2> centerTiles)
+    {
         if (previousCenterTiles.Length != centerTiles.Count)
             return true;
         for (int i = 0; i < previousCenterTiles.Length; i++)
@@ -198,7 +214,8 @@ public class TerrainController : MonoBehaviour {
         return false;
     }
 
-    public void DestroyTerrain() {
+    public void DestroyTerrain()
+    {
         water.parent = null;
         playerTransform.parent = null;
         foreach (Transform t in gameTransforms)
@@ -207,13 +224,15 @@ public class TerrainController : MonoBehaviour {
         terrainTiles.Clear();
     }
 
-    private static string TrimEnd(string str, string end) {
+    private static string TrimEnd(string str, string end)
+    {
         if (str.EndsWith(end))
             return str.Substring(0, str.LastIndexOf(end));
         return str;
     }
 
-    public static float[][] GetGrayScalePixels(Texture2D texture2D) {
+    public static float[][] GetGrayScalePixels(Texture2D texture2D)
+    {
         List<float> grayscale = texture2D.GetPixels().Select(c => c.grayscale).ToList();
 
         List<List<float>> grayscale2d = new List<List<float>>();
